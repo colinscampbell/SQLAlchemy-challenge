@@ -78,16 +78,16 @@ def precipitation():
         temp_dict = {}
         #temp_dict["date"] = date
         #temp_dict["prcp"] = prcp
-        temp_dict[date.tostring()] = prcp
+        temp_dict[date] = prcp
         all_prcp.append(temp_dict)
     return jsonify(all_prcp)
 
 @app.route("/api/v1.0/start=")
-def precipitation():
+def start():
     return 0
 
-@app.route("/api/v1.0/end=")
-def precipitation():
+@app.route("/api/v1.0/start=end=")
+def end():
     return 0
 
 if __name__ == "__main__":
