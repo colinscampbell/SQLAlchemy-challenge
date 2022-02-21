@@ -40,8 +40,8 @@ def welcome():
         f"/api/v1.0/station<br/>"
         f"/api/v1.0/temperature<br/>"
         f"/api/v1.0/precipitation<br/>"
-        f"/api/v1.0/start=<br/>"
-        f"/api/v1.0/start=end="
+        f"/api/v1.0/start=YYYY-MM-DD<br/>"
+        f"/api/v1.0/start=YYYY-MM-DDend=YYYY-MM-DD"
     )
 
 
@@ -76,19 +76,35 @@ def precipitation():
     all_prcp = []
     for date, prcp in results:
         temp_dict = {}
-        #temp_dict["date"] = date
-        #temp_dict["prcp"] = prcp
         temp_dict[date] = prcp
         all_prcp.append(temp_dict)
     return jsonify(all_prcp)
 
-@app.route("/api/v1.0/start=")
-def start():
-    return 0
+@app.route("/api/v1.0/start=<start_date>")
+def start(start_date):
+    session = Session(engine)
+    results = session.query(func.min(Measurement.tobs),func.max(Measurement.tobs),func.avg(Measurement.tobs)).where(Measurement.date >= start_date).all()
+    session.close()
+    weather_data = []
+    temp_dict = {}
+    temp_dict["min"] = results[0][0]
+    temp_dict["max"] = results[0][1]
+    temp_dict["avg"] = results[0][2]
+    weather_data.append(temp_dict)
+    return jsonify(weather_data)
 
-@app.route("/api/v1.0/start=end=")
-def end():
-    return 0
+@app.route("/api/v1.0/start=<start_date>end=<end_date>")
+def end(start_date, end_date):
+    session = Session(engine)
+    results = session.query(func.min(Measurement.tobs),func.max(Measurement.tobs),func.avg(Measurement.tobs)).where((Measurement.date >= start_date) & (Measurement.date <= end_date)).all()
+    session.close()
+    weather_data = []
+    temp_dict = {}
+    temp_dict["min"] = results[0][0]
+    temp_dict["max"] = results[0][1]
+    temp_dict["avg"] = results[0][2]
+    weather_data.append(temp_dict)
+    return jsonify(weather_data)
 
 if __name__ == "__main__":
     app.run(debug=True)
